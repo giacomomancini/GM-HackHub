@@ -1,0 +1,25 @@
+# File di lock e temporanei di Visual Paradigm
+*.vpp.lck
+*.vpp.bak
+.vpupdates/
+
+# Build e IDE (Java / Maven / Gradle / Spring Boot)
+target/
+build/
+.gradle/
+*.class
+*.jar
+*.war
+
+# Configurazioni IDE locali
+.idea/
+*.iml
+.vscode/
+.settings/
+.project
+.classpath
+
+# OS files
+Thumbs.db
+Desktop.ini
+.DS_Store
