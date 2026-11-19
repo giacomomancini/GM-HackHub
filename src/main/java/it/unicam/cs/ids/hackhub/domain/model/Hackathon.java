@@ -1,6 +1,7 @@
 package it.unicam.cs.ids.hackhub.domain.model;
 
 import it.unicam.cs.ids.hackhub.domain.state.HackathonState;
+import it.unicam.cs.ids.hackhub.domain.state.InCorsoState;
 import it.unicam.cs.ids.hackhub.domain.state.InIscrizioneState;
 
 import java.time.LocalDateTime;
@@ -75,6 +76,37 @@ public class Hackathon {
 
     public void setStato(HackathonState stato) {
         this.stato = stato;
+    }
+
+    public void avanzaAInCorso() {
+        this.stato = new InCorsoState();
+    }
+
+    /**
+     * Verifica se l'invio delle sottomissioni è aperto.
+     * È aperto solo se lo stato è IN_CORSO e la data/ora attuale non supera dataFine.
+     */
+    public boolean isInvioAperto() {
+        if (!"IN_CORSO".equals(this.stato.getNomeStato())) {
+            return false;
+        }
+        return !LocalDateTime.now().isAfter(dataFine);
+    }
+
+    /**
+     * Recupera la sottomissione associata a un team, oppure null se non ancora presente.
+     */
+    public Sottomissione getSottomissione(String teamId) {
+        for (Sottomissione s : sottomissioni) {
+            if (s.getTeamId().equals(teamId)) {
+                return s;
+            }
+        }
+        return null;
+    }
+
+    public void aggiungiSottomissione(Sottomissione sottomissione) {
+        this.sottomissioni.add(Objects.requireNonNull(sottomissione));
     }
 
     public void aggiungiTeamIscritto(Team team) {
