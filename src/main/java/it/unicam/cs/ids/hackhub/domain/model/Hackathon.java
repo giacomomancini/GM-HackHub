@@ -3,6 +3,7 @@ package it.unicam.cs.ids.hackhub.domain.model;
 import it.unicam.cs.ids.hackhub.domain.state.HackathonState;
 import it.unicam.cs.ids.hackhub.domain.state.InCorsoState;
 import it.unicam.cs.ids.hackhub.domain.state.InIscrizioneState;
+import it.unicam.cs.ids.hackhub.domain.state.InValutazioneState;
 
 import java.time.LocalDateTime;
 import java.util.*;
@@ -82,10 +83,10 @@ public class Hackathon {
         this.stato = new InCorsoState();
     }
 
-    /**
-     * Verifica se l'invio delle sottomissioni è aperto.
-     * È aperto solo se lo stato è IN_CORSO e la data/ora attuale non supera dataFine.
-     */
+    public void avanzaAInValutazione() {
+        this.stato = new InValutazioneState();
+    }
+
     public boolean isInvioAperto() {
         if (!"IN_CORSO".equals(this.stato.getNomeStato())) {
             return false;
@@ -94,8 +95,16 @@ public class Hackathon {
     }
 
     /**
-     * Recupera la sottomissione associata a un team, oppure null se non ancora presente.
+     * Verifica se la valutazione è aperta per un determinato giudice.
+     * È aperta solo se lo stato è IN_VALUTAZIONE e il giudice coincide con quello assegnato.
      */
+    public boolean isValutazioneAperta(String idGiudice) {
+        if (!"IN_VALUTAZIONE".equals(this.stato.getNomeStato())) {
+            return false;
+        }
+        return this.giudice.getId().equals(idGiudice);
+    }
+
     public Sottomissione getSottomissione(String teamId) {
         for (Sottomissione s : sottomissioni) {
             if (s.getTeamId().equals(teamId)) {
@@ -103,6 +112,23 @@ public class Hackathon {
             }
         }
         return null;
+    }
+
+    public Sottomissione trovaSottomissionePerId(String idSottomissione) {
+        for (Sottomissione s : sottomissioni) {
+            if (s.getId().equals(idSottomissione)) {
+                return s;
+            }
+        }
+        return null;
+    }
+
+    public boolean tutteSottomissioniValutate() {
+        if (sottomissioni.isEmpty()) return false;
+        for (Sottomissione s : sottomissioni) {
+            if (!s.isValutata()) return false;
+        }
+        return true;
     }
 
     public void aggiungiSottomissione(Sottomissione sottomissione) {
