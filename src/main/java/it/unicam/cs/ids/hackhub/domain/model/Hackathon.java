@@ -26,6 +26,7 @@ public class Hackathon {
 
     private final List<Team> teamIscritti = new ArrayList<>();
     private final List<Sottomissione> sottomissioni = new ArrayList<>();
+    private final List<RichiestaSupporto> richiesteSupporto = new ArrayList<>();
 
     private HackathonState stato;
     private String idTeamVincitore;
@@ -75,6 +76,7 @@ public class Hackathon {
     public List<Mentore> getMentori() { return Collections.unmodifiableList(mentori); }
     public List<Team> getTeamIscritti() { return Collections.unmodifiableList(teamIscritti); }
     public List<Sottomissione> getSottomissioni() { return Collections.unmodifiableList(sottomissioni); }
+    public List<RichiestaSupporto> getRichiesteSupporto() { return Collections.unmodifiableList(richiesteSupporto); }
     public HackathonState getStato() { return stato; }
     public String getIdTeamVincitore() { return idTeamVincitore; }
 
@@ -116,6 +118,22 @@ public class Hackathon {
         return this.giudice.getId().equals(idGiudice);
     }
 
+    /**
+     * Verifica se il supporto dei mentori è aperto.
+     * È aperto solo se lo stato è IN_CORSO e il mentore fa parte dello staff assegnato.
+     */
+    public boolean isSupportoAperto(String idMentore) {
+        if (!"IN_CORSO".equals(this.stato.getNomeStato())) {
+            return false;
+        }
+        for (Mentore m : mentori) {
+            if (m.getId().equals(idMentore)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     public Sottomissione getSottomissione(String teamId) {
         for (Sottomissione s : sottomissioni) {
             if (s.getTeamId().equals(teamId)) {
@@ -134,6 +152,15 @@ public class Hackathon {
         return null;
     }
 
+    public RichiestaSupporto trovaRichiestaSupportoPerId(String idRichiesta) {
+        for (RichiestaSupporto r : richiesteSupporto) {
+            if (r.getId().equals(idRichiesta)) {
+                return r;
+            }
+        }
+        return null;
+    }
+
     public boolean tutteSottomissioniValutate() {
         if (sottomissioni.isEmpty()) return false;
         for (Sottomissione s : sottomissioni) {
@@ -144,6 +171,10 @@ public class Hackathon {
 
     public void aggiungiSottomissione(Sottomissione sottomissione) {
         this.sottomissioni.add(Objects.requireNonNull(sottomissione));
+    }
+
+    public void aggiungiRichiestaSupporto(RichiestaSupporto richiesta) {
+        this.richiesteSupporto.add(Objects.requireNonNull(richiesta));
     }
 
     public void aggiungiTeamIscritto(Team team) {
