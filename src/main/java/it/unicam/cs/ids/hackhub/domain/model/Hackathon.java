@@ -1,5 +1,6 @@
 package it.unicam.cs.ids.hackhub.domain.model;
 
+import it.unicam.cs.ids.hackhub.domain.state.ConclusoState;
 import it.unicam.cs.ids.hackhub.domain.state.HackathonState;
 import it.unicam.cs.ids.hackhub.domain.state.InCorsoState;
 import it.unicam.cs.ids.hackhub.domain.state.InIscrizioneState;
@@ -27,6 +28,7 @@ public class Hackathon {
     private final List<Sottomissione> sottomissioni = new ArrayList<>();
 
     private HackathonState stato;
+    private String idTeamVincitore;
 
     public Hackathon(String id,
                      String nome,
@@ -74,6 +76,7 @@ public class Hackathon {
     public List<Team> getTeamIscritti() { return Collections.unmodifiableList(teamIscritti); }
     public List<Sottomissione> getSottomissioni() { return Collections.unmodifiableList(sottomissioni); }
     public HackathonState getStato() { return stato; }
+    public String getIdTeamVincitore() { return idTeamVincitore; }
 
     public void setStato(HackathonState stato) {
         this.stato = stato;
@@ -87,6 +90,18 @@ public class Hackathon {
         this.stato = new InValutazioneState();
     }
 
+    public void impostaVincitore(String idTeamVincitore) {
+        this.idTeamVincitore = Objects.requireNonNull(idTeamVincitore, "L'id del team vincitore non può essere nullo");
+    }
+
+    public void concludi(HackathonState nuovoStato) {
+        this.stato = Objects.requireNonNull(nuovoStato);
+    }
+
+    public boolean isConcluso() {
+        return "CONCLUSO".equals(this.stato.getNomeStato());
+    }
+
     public boolean isInvioAperto() {
         if (!"IN_CORSO".equals(this.stato.getNomeStato())) {
             return false;
@@ -94,10 +109,6 @@ public class Hackathon {
         return !LocalDateTime.now().isAfter(dataFine);
     }
 
-    /**
-     * Verifica se la valutazione è aperta per un determinato giudice.
-     * È aperta solo se lo stato è IN_VALUTAZIONE e il giudice coincide con quello assegnato.
-     */
     public boolean isValutazioneAperta(String idGiudice) {
         if (!"IN_VALUTAZIONE".equals(this.stato.getNomeStato())) {
             return false;
